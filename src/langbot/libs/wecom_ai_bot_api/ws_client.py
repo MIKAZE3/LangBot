@@ -581,7 +581,9 @@ class WecomBotWsClient:
     async def reply_voice(self, req_id: str, media_id: str) -> Optional[dict]:
         return await self._reply_media(req_id, media_id, 'voice')
 
-    async def push_stream_chunk(self, msg_id: str, content: str, is_final: bool = False) -> bool:
+    async def push_stream_chunk(
+        self, msg_id: str, content: str, is_final: bool = False, keep_stream: bool = False
+    ) -> bool:
         """Push a streaming chunk for a given message ID.
 
         Compatible interface with WecomBotClient.push_stream_chunk.
@@ -638,7 +640,7 @@ class WecomBotWsClient:
             # every frame must contain the complete snapshot, not only a delta.
             await self.reply_stream(req_id, stream_id, next_content, finish=is_final, feedback_id=feedback_id)
             self._stream_last_content[msg_id] = next_content
-            if is_final:
+            if is_final and not keep_stream:
                 self._stream_ids.pop(msg_id, None)
                 self._stream_last_content.pop(msg_id, None)
                 self._stream_sessions.pop(msg_id, None)

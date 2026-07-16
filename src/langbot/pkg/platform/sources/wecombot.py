@@ -500,6 +500,7 @@ class WecomBotAdapter(abstract_platform_adapter.AbstractMessagePlatformAdapter):
         message: platform_message.MessageChain,
         quote_origin: bool = False,
         is_final: bool = False,
+        keep_stream: bool = False,
     ):
         items = await self.message_converter.yiri2target(message)
         text = self._join_text_components(items)
@@ -554,7 +555,7 @@ class WecomBotAdapter(abstract_platform_adapter.AbstractMessagePlatformAdapter):
             return {'stream': False, 'form': True, 'fallback': True}
 
         if _ws_mode:
-            success = await self.bot.push_stream_chunk(msg_id, text, is_final=is_final)
+            success = await self.bot.push_stream_chunk(msg_id, text, is_final=is_final, keep_stream=keep_stream)
             if not success and is_final:
                 event = message_source.source_platform_object
                 req_id = event.get('req_id', '')
